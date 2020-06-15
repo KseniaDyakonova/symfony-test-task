@@ -134,7 +134,7 @@ class MainController extends AbstractController
         if ($request->isMethod('POST')) {
             $firstName = $request->request->get('first_name');
             $lastName = $request->request->get('last_name');
-            $phone = $request->request->get('phone');
+            $newPhone = $request->request->get('phone');
             $newOrg = $request->request->get('org');
             $newIdUser = $request->request->get('id_user');
             if (!Validator::test('simpleString', $firstName) || !Validator::test('simpleString', $lastName)) {
@@ -143,7 +143,7 @@ class MainController extends AbstractController
                     'errorMsg' => 'Неправильно заполнены Имя / Фамилия'
                 ]);
             }
-            if (!Validator::test('simplePhone', $phone) || !Validator::test('simpleString', $lastName)) {
+            if (!Validator::test('simplePhone', $newPhone)) {
                 return new JsonResponse([
                     'status' => 'error',
                     'errorMsg' => 'Неправильно заполнено поле Телефон'
@@ -154,6 +154,9 @@ class MainController extends AbstractController
             $entityManager->getConnection()->beginTransaction();
             try {
                 $currentUser = $this->getUser();
+
+                $userRepository = $this->getDoctrine()
+                    ->getRepository(User::class);
 
                 // Если организация поменялась, проверяем, если она в базе.
                 // Если нет, добавляем
@@ -172,14 +175,26 @@ class MainController extends AbstractController
                 }
 
                 if ($newIdUser != $currentUser->getIdUser()) {
-                    // TODO: проверить, что пользователь с таким id существует
-                    $currentUser->setIdUser($newIdUser);
+                    $foundUser = $userRepository->findOneBy(['id' => $newIdUser]);
+                    if ($foundUser) {
+                        $currentUser->setIdUser($newIdUser);
+                    }
+                }
+                if ($newPhone != $currentUser->getPhone()) {
+                    $foundUser = $userRepository->findOneBy(['phone' => $newPhone]);
+                    if (!$foundUser) {
+                        $currentUser->setPhone($newPhone);
+                    } else {
+                        $entityManager->getConnection()->rollBack();
+                        return new JsonResponse([
+                            'status' => 'error',
+                            'errorMsg' => 'Пользователь с таким номером телефона уже есть в базе.'
+                        ]);
+                    }
                 }
 
                 $currentUser->setFirstName($firstName);
                 $currentUser->setLastName($lastName);
-                // TODO: проверить, что телефон уникальный
-                $currentUser->setPhone($phone);
 
                 $entityManager->persist($currentUser);
                 $entityManager->flush();
