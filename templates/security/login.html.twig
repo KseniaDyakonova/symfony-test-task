@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block body %}
+
+    <h1 class="h3 mb-3 font-weight-normal">Пожалуйста, введите свой номер телефона и пароль</h1>
+    <div class="form-wrapper login-form-wrapper">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3">
+                Вы вошли как {{ app.user.username }}, <a href="{{ path('app_logout') }}">Выйти</a>
+            </div>
+        {% endif %}
+
+        <form action="{{ path('app_login') }}" method="post">
+            <div class="row form-group">
+                <div class="col-md-3 col-12">
+                    <i class="fas fa-mobile-alt"></i>
+                    <label for="inputPhone">Телефон</label>
+                </div>
+                <div class="col-md-9 col-12">
+                    <input id="inputPhone" value="{{ last_username }}"  name="phone" type="text" class="form-control"  required autofocus>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-3 col-12">
+                    <i class="fas fa-lock"></i>
+                    <label for="inputPassword">Пароль</label>
+                </div>
+                <div class="col-md-9 col-12">
+                    <input id="inputPassword" name="password" type="password" class="form-control" required>
+                </div>
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button class="btn btn-info" type="submit">Войти</button>
+        </form>
+    </div>
+{% endblock %}

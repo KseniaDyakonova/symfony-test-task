@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/easy-autocomplete.min.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h1>Регистрация пользователя</h1>
+    <div class="form-wrapper signup-form-wrapper">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <form action="{{ path('signup') }}" method="post" id="signupForm">
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="fas fa-user"></i>
+                    <label for="inputFirstName">Имя</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <input id="inputFirstName" name="user[first_name]" value="{{ userArray.first_name|default('') }}" type="text" class="form-control">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="far fa-user"></i>
+                    <label for="inputLastName">Фамилия</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <input id="inputLastName" name="user[last_name]" value="{{ userArray.last_name|default('') }}" type="text" class="form-control">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="fas fa-mobile-alt"></i>
+                    <label for="inputPhone">Телефон</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <input id="inputPhone" name="user[phone]" value="{{ userArray.phone|default('') }}" type="text" class="form-control">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="fas fa-user-friends"></i>
+                    <label for="inputIdUser">Кто пригласил</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <select name="user[id_user]" id="inputIdUser" class="form-control">
+                        <option value="0"></option>
+                        {% for user in userList %}
+                            <option value="{{ user.Id }}" {% if userArray.id_user is defined and userArray.id_user == user.Id %} selected {% endif %}>{{ user.FirstName|e }} {{ user.LastName|e  }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="far fa-building"></i>
+                    <label for="inputIdOrg">Организация</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <input id="inputIdOrg" value="{{ userArray.org|default('') }}" name="user[org]" type="text" class="form-control">
+                    <input id="idOrg" type="hidden" name="user[id_org]" value="">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="fas fa-lock"></i>
+                    <label for="inputPassword">Пароль</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <input id="inputPassword" name="user[password]" type="password" class="form-control">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4 col-12">
+                    <i class="fas fa-lock"></i>
+                    <label for="inputPassword2">Подтвердите пароль</label>
+                </div>
+                <div class="col-md-8 col-12">
+                    <input id="inputPassword2" name="user[password2]" type="password" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-info">Зарегистрироваться</button>
+        </form>
+    </div>
+
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/jquery.easy-autocomplete.min.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Привет!</h1>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" style="max-width: 600px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <p>Этот сайт пока почти ничего не умеет :(</p>
+    <p>Вы можете:</p>
+    <ul class="fancy-list">
+        <li><a href="{{ path('signup') }}" class="a-anim">Зарегистрироваться</a></li>
+        <li>или <a href="{{ path('app_login') }}" class="a-anim">войти в личный кабинет</a></li>
+    </ul>
+
+{% endblock %}
